@@ -1,4 +1,4 @@
-# stiwOS
+# stiw.nOS
 stupid things i wrote, now Open Source.
 
 Shield: [![CC BY-NC-ND 4.0][cc-by-nc-nd-shield]][cc-by-nc-nd]
