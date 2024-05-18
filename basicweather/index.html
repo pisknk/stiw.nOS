@@ -1,0 +1,80 @@
+<!-- a really barebones version of IIR. No UI and CSS. Just Backend code. change as you please -->
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Basic Weather</title>
+</head>
+<body>
+  <h1>Is it Raining?</h1>
+
+  <label for="cityInput">Enter City:</label>
+  <input type="text" id="cityInput" placeholder="Enter city name">
+  <button onclick="getWeather()">Get Weather</button>
+
+  <p id="weatherInfo">Enter a city name to see if it's raining there or not.</p>
+
+  <!-- insert your own OpenWeather API here -->
+  <!-- you can make it into another weather website concept or do whatever you please -->
+  
+  <script>
+    const apiKey = '';
+    const weatherInfoElem = document.getElementById('weatherInfo');
+
+    function getWeather() {
+      const city = document.getElementById('cityInput').value.trim();
+      if (city === '') {
+        weatherInfoElem.innerHTML = 'Please enter a city name.';
+        return;
+      }
+
+      const apiUrl = `https://api.weatherbit.io/v2.0/current?city=${city}&key=${apiKey}`;
+
+      fetch(apiUrl)
+        .then(response => response.json())
+        .then(data => {
+          if (data.data && data.data.length > 0) {
+            const weatherData = data.data[0];
+            const weatherDescription = weatherData.weather.description.toLowerCase();
+            let message = '';
+
+            if (weatherDescription.includes('rain')) {
+              if (weatherDescription.includes('clouds')) {
+                message = 'Cloudy and Raining';
+              } else if (weatherDescription.includes('wind')) {
+                message = 'Windy and Raining';
+              } else {
+                message = 'It\'s Raining';
+              }
+            } else if (weatherDescription.includes('clouds')) {
+              if (weatherDescription.includes('wind')) {
+                message = 'Windy, but at least it\'s not raining';
+              } else {
+                message = 'Cloudy, but not Raining';
+              }
+            } else if (weatherDescription.includes('wind')) {
+              message = 'It\'s Windy'; 
+            } else if (weatherDescription.includes('snow')) {
+              message = 'It\'s worse than Raining, It\'s Snowing!';
+            } else if (weatherDescription.includes('clear')) {
+              message = 'Definitely not Raining';
+            } else if (weatherDescription.includes('thunderstorm')) {
+              message = 'I hate to break it to you, but it is really Raining there.';
+            }
+            else{
+              message = 'It\'s Not Raining';
+            }
+
+            weatherInfoElem.innerHTML = message;
+          } else {
+            weatherInfoElem.innerHTML = 'Weather data not found for the entered city.';
+          }
+        })
+        .catch(error => {
+          console.log('Error fetching weather data:', error);
+          weatherInfoElem.innerHTML = 'Failed to fetch weather data';
+        });
+    }
+  </script>
+</body>
+</html>
