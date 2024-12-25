@@ -1,35 +1,49 @@
 // ==UserScript==
-// @name         Skip Her!
+// @name         skip them!
 // @namespace    https://pisknk.github.io
-// @version      0.1
-// @description  Automatically skip Taylor Swift songs on YouTube Music.
+// @version      0.2
+// @description  automatically skip songs made by certain problematic artists on YouTube Music.
 // @author       pisknk
 // @match        https://music.youtube.com/*
 // @grant        none
 // ==/UserScript==
 
-// this is a tampermonkey script, 
-
-(function() {
+(function () {
     'use strict';
 
-    function isTaylorSwiftSong() {
+    // list of artists to block
+    const blockedArtists = [
+        "Taylor Swift", // to add more artists, follow the following structure.
+        "Drake", // add a comma at the end of the quotes
+        "Justin Bieber"
+    ];
 
-        let songTitle = document.querySelector('.title.ytmusic-player-bar').textContent.trim();
-        let artistName = document.querySelector('.byline.ytmusic-player-bar').textContent.trim();
+    function isBlockedSong() {
+        const songTitleElement = document.querySelector('.title.ytmusic-player-bar');
+        const artistNameElement = document.querySelector('.byline.ytmusic-player-bar');
 
-        return artistName.includes('Taylor Swift') || songTitle.includes('Taylor Swift');
+        if (!songTitleElement || !artistNameElement) {
+            return false; // if the elements aren't available, do nothing
+        }
+
+        const songTitle = songTitleElement.textContent.trim();
+        const artistName = artistNameElement.textContent.trim();
+
+        // check if the current song's artist or title matches any blocked artist
+        return blockedArtists.some(artist => artistName.includes(artist) || songTitle.includes(artist));
     }
 
     function skipSong() {
-        let skipButton = document.querySelector('.next-button.ytmusic-player-bar');
+        const skipButton = document.querySelector('.next-button.ytmusic-player-bar');
         if (skipButton) {
             skipButton.click();
+            console.log("skipped a song made by some problematic artist!");
         }
     }
 
-    setInterval(function() {
-        if (isTaylorSwiftSong()) {
+    // continuously check the song every 50ms
+    setInterval(function () {
+        if (isBlockedSong()) {
             skipSong();
         }
     }, 50);
